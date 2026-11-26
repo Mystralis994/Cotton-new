@@ -1,0 +1,80 @@
+rules_version = '2';
+
+// Cotton Candy Sticker — Least-Privilege Firebase Cloud Storage Security Rules
+// Optional template: the live app stores previews in /public/previews and compressed data URLs in Firestore without requiring Firebase Storage.
+// If Firebase Storage is enabled in the future, deploy this file in Firebase Console -> Storage -> Rules.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Global default-deny safety net
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdminEmail() {
+      return isVerifiedUser() && request.auth.token.email == 'jellyzizy@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdminEmail()
+        || (
+          isVerifiedUser()
+          && firestore.exists(/databases/ai-studio-8b04fdde-7890-4c82-8b31-93e1040849f7/documents/admins/$(request.auth.uid))
+        );
+    }
+
+    function isValidImageUpload(maxBytes) {
+      return request.resource != null
+        && request.resource.size > 0
+        && request.resource.size <= maxBytes
+        && request.resource.contentType.matches('image/(png|jpeg|webp)');
+    }
+
+    // 1. Public watermarked low-resolution sticker previews ONLY
+    match /previews/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidImageUpload(2 * 1024 * 1024);
+      allow delete: if isAdmin();
+    }
+
+    // 2. QRIS / Manual payment visual assets configured by Admin
+    match /payment-methods/{methodId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidImageUpload(2 * 1024 * 1024);
+      allow delete: if isAdmin();
+    }
+
+    // 3. Original high-resolution digital sticker archives — STRICTLY ADMIN ONLY
+    // Customers never download originals from Cloud Storage; files are delivered manually via WhatsApp.
+    match /originals/{allPaths=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // 4. Optional future customer payment proof uploads (authenticated verified order owner or Admin)
+    match /payment-proofs/{orderId}/{fileName} {
+      allow read: if isAdmin()
+        || (
+          isVerifiedUser()
+          && firestore.exists(/databases/ai-studio-8b04fdde-7890-4c82-8b31-93e1040849f7/documents/orders/$(orderId))
+          && firestore.get(/databases/ai-studio-8b04fdde-7890-4c82-8b31-93e1040849f7/documents/orders/$(orderId)).data.userId == request.auth.uid
+        );
+      allow write: if isAdmin()
+        || (
+          isVerifiedUser()
+          && isValidImageUpload(5 * 1024 * 1024)
+          && firestore.exists(/databases/ai-studio-8b04fdde-7890-4c82-8b31-93e1040849f7/documents/orders/$(orderId))
+          && firestore.get(/databases/ai-studio-8b04fdde-7890-4c82-8b31-93e1040849f7/documents/orders/$(orderId)).data.userId == request.auth.uid
+        );
+      allow delete: if isAdmin();
+    }
+  }
+}

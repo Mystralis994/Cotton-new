@@ -1,0 +1,6 @@
+{
+  "name": "Cotton Candy Sticker",
+  "description": "Kawaii pastel digital sticker shop offering downloadable sticker packs, planner kits, printable PNG sheets, and creative bundles.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

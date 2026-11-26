@@ -1,0 +1,359 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated customer or store administrator profile.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "role": { "type": "string", "enum": ["customer", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Allowlisted store administrator privilege marker.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "grantedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "grantedAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Storefront product category for organizing digital sticker collections.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 60 },
+        "slug": { "type": "string", "maxLength": 80, "pattern": "^[a-z0-9\\-]+$" },
+        "description": { "type": "string", "maxLength": 280 },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "slug", "description", "sortOrder", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Downloadable digital sticker pack, printable sheet, or bundle.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 120 },
+        "slug": { "type": "string", "maxLength": 140, "pattern": "^[a-z0-9\\-]+$" },
+        "description": { "type": "string", "maxLength": 2500 },
+        "price": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "categoryId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "categoryName": { "type": "string", "maxLength": 60 },
+        "previewImages": { "type": "array" },
+        "featured": { "type": "boolean" },
+        "bestSeller": { "type": "boolean" },
+        "newArrival": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "productType": { "type": "string", "enum": ["individual_pack", "bundle", "printable_pack"] },
+        "fileFormat": { "type": "string", "maxLength": 120 },
+        "contentsSummary": { "type": "string", "maxLength": 500 },
+        "downloadableAssetKey": { "type": "string", "maxLength": 180 },
+        "popularityScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "description",
+        "price",
+        "categoryId",
+        "categoryName",
+        "previewImages",
+        "featured",
+        "bestSeller",
+        "newArrival",
+        "published",
+        "productType",
+        "fileFormat",
+        "contentsSummary",
+        "downloadableAssetKey",
+        "popularityScore",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PaymentMethod": {
+      "title": "PaymentMethod",
+      "description": "Manual payment method configured by admin (Bank Transfer, QRIS, PayPal link, or Other).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 100 },
+        "type": { "type": "string", "enum": ["bank_transfer", "qris", "paypal", "other"] },
+        "enabled": { "type": "boolean" },
+        "accountHolderName": { "type": "string", "maxLength": 120 },
+        "bankName": { "type": "string", "maxLength": 120 },
+        "accountNumber": { "type": "string", "maxLength": 80 },
+        "paypalLink": { "type": "string", "maxLength": 500 },
+        "qrisImageUrl": { "type": "string", "maxLength": 300000 },
+        "description": { "type": "string", "maxLength": 500 },
+        "instructions": { "type": "string", "maxLength": 2000 },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "enabled",
+        "accountHolderName",
+        "bankName",
+        "accountNumber",
+        "paypalLink",
+        "qrisImageUrl",
+        "description",
+        "instructions",
+        "sortOrder",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PaymentAdminConfig": {
+      "title": "PaymentAdminConfig",
+      "description": "Admin-only payment operational configuration and internal notification preferences.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "notificationEmail": { "type": "string", "format": "email", "maxLength": 254 },
+        "internalPaymentNotes": { "type": "string", "maxLength": 2000 },
+        "requireReferenceFormatHint": { "type": "string", "maxLength": 300 },
+        "updatedBy": { "type": "string", "maxLength": 120 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "notificationEmail",
+        "internalPaymentNotes",
+        "requireReferenceFormatHint",
+        "updatedBy",
+        "updatedAt"
+      ]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order record supporting manual payment instructions, proof submission, and admin verification.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderNumber": { "type": "string", "maxLength": 32 },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "customerName": { "type": "string", "maxLength": 120 },
+        "customerEmail": { "type": "string", "format": "email", "maxLength": 254 },
+        "customerCountry": { "type": "string", "maxLength": 80 },
+        "customerWhatsapp": { "type": "string", "maxLength": 40 },
+        "customerNote": { "type": "string", "maxLength": 500 },
+        "checkoutChannel": { "type": "string", "enum": ["whatsapp", "manual_payment"] },
+        "productIds": { "type": "array" },
+        "productNames": { "type": "array" },
+        "quantities": { "type": "array" },
+        "unitPrices": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "total": { "type": "number" },
+        "currency": { "type": "string", "enum": ["USD"] },
+        "orderStatus": {
+          "type": "string",
+          "enum": [
+            "pending_contact",
+            "pending",
+            "confirmed",
+            "processing",
+            "completed",
+            "cancelled",
+            "paid",
+            "failed",
+            "refunded"
+          ]
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["unpaid", "awaiting_verification", "paid", "rejected", "pending", "failed", "refunded"]
+        },
+        "paymentMethodId": { "type": "string", "maxLength": 64 },
+        "paymentMethodName": { "type": "string", "maxLength": 100 },
+        "paymentMethodType": { "type": "string", "enum": ["bank_transfer", "qris", "paypal", "other", ""] },
+        "paymentMethodSnapshot": { "type": "object" },
+        "paymentReference": { "type": "string", "maxLength": 160 },
+        "customerPaymentNote": { "type": "string", "maxLength": 500 },
+        "paymentProofUrl": { "type": "string", "maxLength": 500 },
+        "paymentSubmittedAt": { "type": "string", "maxLength": 64 },
+        "rejectionReason": { "type": "string", "maxLength": 500 },
+        "verifiedBy": { "type": "string", "maxLength": 120 },
+        "verifiedAt": { "type": "string", "maxLength": 64 },
+        "verificationHistory": { "type": "array" },
+        "downloadAuthorized": { "type": "boolean" },
+        "itemCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "orderNumber",
+        "userId",
+        "customerName",
+        "customerEmail",
+        "customerCountry",
+        "subtotal",
+        "total",
+        "currency",
+        "orderStatus",
+        "paymentStatus",
+        "paymentMethodId",
+        "paymentMethodName",
+        "paymentMethodType",
+        "paymentMethodSnapshot",
+        "paymentReference",
+        "customerPaymentNote",
+        "paymentProofUrl",
+        "paymentSubmittedAt",
+        "rejectionReason",
+        "verifiedBy",
+        "verifiedAt",
+        "verificationHistory",
+        "downloadAuthorized",
+        "itemCount",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OrderItem": {
+      "title": "OrderItem",
+      "description": "Line item snapshot belonging to an order.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "productId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "productName": { "type": "string", "maxLength": 120 },
+        "productType": { "type": "string", "enum": ["individual_pack", "bundle", "printable_pack"] },
+        "fileFormat": { "type": "string", "maxLength": 120 },
+        "priceSnapshot": { "type": "number" },
+        "quantity": { "type": "number" },
+        "previewImage": { "type": "string", "maxLength": 300000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "orderId",
+        "userId",
+        "productId",
+        "productName",
+        "productType",
+        "fileFormat",
+        "priceSnapshot",
+        "quantity",
+        "previewImage",
+        "createdAt"
+      ]
+    },
+    "DownloadAccess": {
+      "title": "DownloadAccess",
+      "description": "Verified digital download entitlement granted after confirmed payment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "orderId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "productId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "productName": { "type": "string", "maxLength": 120 },
+        "assetKey": { "type": "string", "maxLength": 180 },
+        "fileFormat": { "type": "string", "maxLength": 120 },
+        "authorized": { "type": "boolean" },
+        "downloadCount": { "type": "number" },
+        "maxDownloads": { "type": "number" },
+        "grantedBy": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "orderId",
+        "userId",
+        "productId",
+        "productName",
+        "assetKey",
+        "fileFormat",
+        "authorized",
+        "downloadCount",
+        "maxDownloads",
+        "grantedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminAuditLog": {
+      "title": "AdminAuditLog",
+      "description": "Immutable administrative audit record for backup restores and catalog preview migrations.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "action": { "type": "string", "enum": ["backup_restore", "catalog_sync", "preview_migration"] },
+        "actorEmail": { "type": "string", "maxLength": 120 },
+        "summary": { "type": "string", "maxLength": 200 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "action", "actorEmail", "summary", "details", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Customer and admin account profiles isolated by owner UID."
+    },
+    "/admins/{uid}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Explicit admin allowlist documents."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Storefront sticker categories."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Digital sticker product catalog; public reads restricted to published items."
+    },
+    "/paymentMethods/{methodId}": {
+      "schema": { "$ref": "#/entities/PaymentMethod" },
+      "description": "Configured manual payment methods; customers can only read enabled methods."
+    },
+    "/paymentAdminConfig/{configId}": {
+      "schema": { "$ref": "#/entities/PaymentAdminConfig" },
+      "description": "Admin-only private operational payment configuration."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer orders with payment method snapshots, confirmation state transitions, and admin verification."
+    },
+    "/orderItems/{orderItemId}": {
+      "schema": { "$ref": "#/entities/OrderItem" },
+      "description": "Immutable line item price snapshots tied to an order."
+    },
+    "/downloadAccess/{accessId}": {
+      "schema": { "$ref": "#/entities/DownloadAccess" },
+      "description": "Verified fulfillment entitlements readable only by the entitled customer or admin."
+    },
+    "/adminAuditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AdminAuditLog" },
+      "description": "Admin-only immutable audit trail for backup restores and preview URL migrations."
+    }
+  }
+}
